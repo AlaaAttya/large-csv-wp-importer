@@ -11,10 +11,20 @@
 
     add_action('admin_menu','super_plugin_menu');
 
+	/**
+	 * Add the admin page plugin menu
+	 *
+	 * @return	void
+	 */
     function super_plugin_menu() {
     	add_menu_page( 'CSV importer', 'Upload CSV', 'manage_options', 'csv-importer-plugin', 'upload_page' );
     }
 
+	/**
+	 * Handle the upload page
+	 *
+	 * @return	void
+	 */
     function upload_page() {
     	// Adding assets
     	wp_enqueue_style( 'bootstrap_lib', 'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css' );
@@ -24,7 +34,7 @@
     	wp_enqueue_script( 'pusher', plugin_dir_url( __FILE__ ) . '/assets/js/pusher.js' );
     	
     	// Handle file upload
-    	hanle_file_upload();
+    	handle_file_upload();
 
     	echo "<h3>Upload CSV</h3>";
     	
@@ -48,8 +58,12 @@
     	echo $html_page;
     }
 
-    function hanle_file_upload() {
-    	
+	/**
+	 * Handle file upload
+	 *
+	 * @return	void
+	 */
+    function handle_file_upload() {
 
     	if(isset($_FILES['csv_file'])) {
     		$arr_file_type = wp_check_filetype(basename($_FILES['csv_file']['name']));
@@ -58,13 +72,14 @@
     		// Set an array containing a list of acceptable mimes
             $mimes = array('application/vnd.ms-excel','text/plain','text/csv','text/tsv');
 
-            //if(\in_array($uploaded_file_type, $mimes)) {
+            if(\in_array($uploaded_file_type, $mimes)) {
             	$upload_overrides = array( 'test_form' => false );
             	$uploaded_file = wp_handle_upload($_FILES['csv_file'], $upload_overrides);
-            	//var_dump('php ' . plugin_dir_url( __FILE__ ) .'large-csv-wp-importer/main.php  >> /dev/null &');die;
-            	$out = shell_exec('php ' . plugin_dir_path( __FILE__ ) .'large-csv-wp-importer/main.php  >> /dev/null &');
-            	//var_dump($uploaded_file);die;
-            //}
+            	// Execute the importing script in the background without blocking the plugin execution
+            	$out = shell_exec('php ' . plugin_dir_path( __FILE__ ) .'large-csv-wp-importer/main.php ' . $uploaded_file['file'] . '  >> /dev/null &');
+            } else {
+            	echo "<b><h4>invalid file format</h4></b>";
+            }
     	}
     }
 ?>
