@@ -54,6 +54,14 @@
     				<input type="submit" />
     			</form>
     		</div>
+    		<br /><br /><br />
+    		<div style="margin-left: 30%">
+				Imported rows count<span class="label label-success" style="font-size: 3em" id="success-count"></span>
+
+				<br /><br /><br />
+			</div>
+    		<h3 style="margin-left:20%;">output</h3>
+    		<div id="output-wrapper" style="margin-left:20%;border-style: solid;height:200px;overflow: scroll;width:60%"></div>
     	';
     	echo $html_page;
     }
